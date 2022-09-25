@@ -4,8 +4,6 @@ p_load(tidyverse)
 p_load(ggpubr)
 p_load(car)
 
-
-
 #### 1a####
 birthweight<- read.csv('birthweight.txt')
 birthweight <- birthweight$birthweight
@@ -17,7 +15,7 @@ print('Data is normal')
 n <- length(birthweight)
 mu <- mean(birthweight)
 sd <- sd(birthweight)
-ci <- 1.645 * sd
+ci <- 1.645 * sd / sqrt(n)
 
 lower <- mu - ci
 upper <- mu + ci
@@ -37,12 +35,11 @@ k = 140
 p = k/n
 q = 1-p
 
-#### 2b ####
-p - (2.576*sqrt(p * q/n))
-p + (2.576*sqrt(p * q/n))
+#### 2b+c ####
+p - (2.65*sqrt(p * q/n)) # 
+p + (2.65*sqrt(p * q/n))
 
-#### 2c ####
-
+binom.test(140, n=200, p=0.7, conf.level=.99)
 
 #### 3a+b ####
 weather <- read.csv('weather.txt', sep='\t')
