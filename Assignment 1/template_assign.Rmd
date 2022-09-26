@@ -1,11 +1,91 @@
 ---
 title: "Assignment 1"
-author: "Jesse Wijlhuizen (13588818), "
+author: "Jesse Wijlhuizen (13588818), Matthijs Vogd (12425389), "
 date: "26 September 2021"
 output: pdf_document
 fontsize: 11pt
 highlight: tango
 ---
+
+### Excercise 1.1
+## a
+The data seems to be normally disributed, one can project a bell curve on the
+histogram and the QQplot results in a straight line. In addition the Shapiro-Wilk
+test results in p-value > 0.05. Lastly the point estimate fo mu is computed:
+
+```{r}
+data=read.table(file="birthweight.txt",header=TRUE)
+par(mfrow=c(1,2)); hist(data$birthweight); qqnorm(data$birthweight)
+shapiro.test(data$birthweight)
+mean(data$birthweight)
+```
+
+## b
+
+```{r}
+n = length(data$birthweight)
+mu = mean(data$birthweight)
+sd = sd(data$birthweight)
+t = qt(p=0.05, df=(n -1), lower.tail=FALSE)
+
+ci = t * sd / sqrt(n - 1); ci
+lower_bound = mu - ci; lower_bound
+upper_bound = mu + ci; upper_bound
+```
+
+Bounded 90% confidence interval = 2828.62  < mu < 2997.96
+
+## c
+```{r}
+t.test(data, mu = 2800, alternative = "greater")
+```
+
+The 95% confidence interval doesn’t overlap with 2800, lower bound is higher. 
+So expert's claim is verified.
+
+## d
+This is a one-sided test because we are only interesten in the mean being greater 
+than 2800. The upper bound is irrelevant thus it can be set to infinity. This is 
+why the confidence interval shifts a little bit, there is a slight chance that 
+the actual mean is above the upper bound found in 1.1b.
+
+### Excercise 1.2
+## a
+Point estimate for p = x/n = 140/200 = 0.7
+
+## b
+For the calculation of the standard deviation a pseudo dataset was created in R.
+For the t-value 2.62 was consevatively selected from the table using 100 df.
+```{r}
+a = matrix(0, 60, 1)
+b = matrix(1, 140,1)
+d = c(a,b)
+sd = sd(d) 
+n = 200
+mu = 0.7
+t = 2.626
+
+ci = t * sd / sqrt(n - 1); ci
+lower_bound = mu - ci; lower_bound
+upper_bound = mu + ci; upper_bound
+```
+
+Bounded 99% confidence interval = 0.614  < mu < 0.786
+
+## c
+For alfa = 0.1 the p-value = 0.1254 (p > 0.05), thus the null hypothesis cannot 
+be rejected. For other alfa-values, the p-value remains the same, only the 
+confidence interval changes. Higher alfa-values result in smaller intervals. 
+This makes sense because you allow for more uncertainty when creating the interval.
+```{r}
+
+t.test(d, mu=.75, conf.level = .99)
+
+t.test(d, mu=.75, conf.level = .999)[4]
+t.test(d, mu=.75, conf.level = .95)[4]
+t.test(d, mu=.75, conf.level = .90)[4]
+t.test(d, mu=.75, conf.level = .80)[4]
+```
 
 ## Introduction to R Markdown
 
