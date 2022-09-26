@@ -7,7 +7,13 @@ fontsize: 11pt
 highlight: tango
 ---
 
-### Excercise 1.1
+```{r}
+library(pacman)
+p_load(pwr)
+p_load(tidyverse)
+
+```
+# Excercise 1.1
 ## a
 The data seems to be normally disributed, one can project a bell curve on the
 histogram and the QQplot results in a straight line. In addition the Shapiro-Wilk
@@ -49,7 +55,7 @@ than 2800. The upper bound is irrelevant thus it can be set to infinity. This is
 why the confidence interval shifts a little bit, there is a slight chance that 
 the actual mean is above the upper bound found in 1.1b.
 
-### Excercise 1.2
+# Excercise 1.2
 ## a
 Point estimate for p = x/n = 140/200 = 0.7
 
@@ -86,6 +92,97 @@ t.test(d, mu=.75, conf.level = .95)[4]
 t.test(d, mu=.75, conf.level = .90)[4]
 t.test(d, mu=.75, conf.level = .80)[4]
 ```
+
+# Excercise 1.3
+## a) + b)
+
+```{r}
+weather <- read.csv('../weather.txt', sep='\t')
+summary(weather)
+```
+
+Temperature and humidity seem to be correctly measured
+
+```{r}
+shapiro.test(weather$humidity);shapiro.test(weather$temperature)
+
+par(mfrow=c(1,2)); hist(weather$humidity); hist(weather$temperature) # two histograms next to each other
+qqnorm(weather$humidity); qqnorm(weather$temperature) # two QQ-plots next to each other
+```
+As expected, temperature measurements are not normally distributed as can be seen from the QQPlot for temperature as well as the Shapiro-Wilk normality test for temperature.
+
+## c)
+```{r}
+
+
+# Manually
+n <- length(weather$humidity)
+mu <- mean(weather$temperature)
+sd <- sd(weather$temperature)
+t <- qt(p=.1/2, df=59, lower.tail=FALSE)
+ci <- t * sd / sqrt(n)
+c(mu + ci, mu - ci)
+
+# Using function
+k <- t.test(weather$temperature, conf.level = 0.9)
+k$conf.int
+```
+
+The confidence interval indicates that we can be 90\% confident that the population mean temperature belonging to this temperature sample lies between 47.49 degrees F and 57.96 degrees F.
+
+## d)
+```{r}
+sd <- weather$humidity %>% sd
+E <- 1
+t_alpha <- qt(p=0.05/2, df=length(weather$humidity) - 1, lower.tail=FALSE)
+
+(t_alpha * sd / E) ^ 2
+
+```
+
+According to the computation, 146 is the minimum sample size for a 95% confidence interval for the mean humidity such that the confidence interval has at most length 2 percentage points.
+
+## d)
+```{r}
+sd <- weather$humidity %>% sd
+E <- 0.01 * mean(weather$humidity)
+t_alpha <- qt(p=0.05/2, df=length(weather$humidity) - 1, lower.tail=FALSE)
+
+(t_alpha * sd / E) ^ 2
+
+```
+
+According to the computation, 237 is the minimum sample size for a 95% confidence interval for the mean humidity such that the confidence interval has at most length 2% of the mean humidity.
+
+# Exercise 1.4
+## a)
+We are testing for homogeneity. The data points are collected using samples from different groups separately.
+
+## b)
+```{r}
+austen <- read.table('../austen.txt', header=TRUE)
+austen_self <- austen %>% select(-Sand2)
+cs_self <- chisq.test(austen_self)
+cs_self
+```
+
+As we cannot test for an $H_a$ that Austen is consistent, we cannot prove that Austen has been consistent in her texts. However, the $\chi^2$-test results do not indicate Austen was not consistent in her novels.
+
+## c)
+```{r}
+austen_other <- austen %>% mutate(Austen = Sense + Emma + Sand1)
+cs_other1 <- austen_other %>% select(Sand2, Austen) %>% chisq.test
+cs_other1
+
+cs_other2 <- austen_other %>% select(Sand2, Sand1) %>% chisq.test
+cs_other2
+
+cs_other3 <- austen %>% chisq.test
+cs_other3
+```
+
+As we cannot test for an $H_a$ that Austen's admirer was succesfull, we will test for evidence that Austen's admirer was not successful using a $\chi^2$-test. The three different test results (admirer's part of the book vs. average of Austen texts, admirer's part of the book vs. Austen's part of the book, admirer's part of the book vs. each respective of Austen texts) do not indicate Austen's admirer was not successful.
+
 
 ## Introduction to R Markdown
 
