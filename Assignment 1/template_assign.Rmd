@@ -99,6 +99,7 @@ t.test(d, mu=.75, conf.level = .80)[4]
 ```{r}
 weather <- read.csv('../weather.txt', sep='\t')
 summary(weather)
+boxplot(weather$humidity) ; boxplot(weather$temperature)
 ```
 
 Temperature and humidity seem to be correctly measured. No specialities have been found.
